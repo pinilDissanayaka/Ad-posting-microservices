@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { AuthController } from './auth.controller'
+import { AppController } from './app.controller'
 import { AuthService } from './auth.service'
 import { ConfigModule } from '@nestjs/config'
 import * as Joi from 'joi'
@@ -39,7 +40,7 @@ import { SERVICES } from 'utils/constants'
     ]),
     RmqModule.register([SERVICES.AUTH_SERVICE]),
   ],
-  controllers: [AuthController],
+  controllers: [AppController, AuthController],
   providers: [AuthService, UserRepository, CompanyRepository, { provide: APP_GUARD, useClass: Authorize }],
 })
 export class AuthModule {}

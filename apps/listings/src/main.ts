@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core'
-import { AuthModule } from './auth.module'
+import { ListingsModule } from './listings.module'
 import { ConfigService } from '@nestjs/config'
 import helmet from 'helmet'
 import * as morgan from 'morgan'
@@ -9,12 +9,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as express from 'express'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthModule)
+  const app = await NestFactory.create(ListingsModule)
 
   const configService = app.get<ConfigService>(ConfigService)
   const rmqService = app.get<RmqService>(RmqService)
 
-  const PORT = configService.get('PORT')
+  const PORT = configService.get('LISTINGS_PORT') || 8081
 
   // Increase payload size limit for file uploads (50MB)
   app.use(express.json({ limit: '50mb' }))
@@ -28,9 +28,9 @@ async function bootstrap() {
   }))
   app.use(morgan('dev'))
 
-  // Enable CORS for frontend (AFTER helmet)
+  // Enable CORS for frontend and dashboard (AFTER helmet)
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // Next.js frontend ports
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:8080'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -38,13 +38,13 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   })
 
-  app.connectMicroservice(rmqService.getOptions('AUTH'))
+  app.connectMicroservice(rmqService.getOptions('LISTINGS'))
   app.useGlobalPipes(new ValidationPipe())
 
   // Swagger API Documentation
   const config = new DocumentBuilder()
     .setTitle('Ad Posting Microservices API')
-    .setDescription('API documentation for Ad Posting platform - Auth Service')
+    .setDescription('API documentation for Ad Posting platform - Listings Service')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
@@ -52,6 +52,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document)
 
   await app.startAllMicroservices()
-  await app.listen(PORT, () => console.log(`Listening to requests on port: ${PORT}`))
+  await app.listen(PORT, () => console.log(`Listings service listening on port: ${PORT}`))
 }
 bootstrap()

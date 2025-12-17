@@ -61,6 +61,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/notifications/tsconfig.app.json"
       }
+    },
+    "listings": {
+      "type": "application",
+      "root": "apps/listings",
+      "entryFile": "main",
+      "sourceRoot": "apps/listings/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/listings/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

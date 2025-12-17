@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Posting API - Test Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .status {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .status-item {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 15px;
+            background: #4caf50;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .endpoint {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .endpoint-header {
+            background: #f8f9fa;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .endpoint-header:hover {
+            background: #e9ecef;
+        }
+        .method {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .POST { background: #49cc90; color: white; }
+        .GET { background: #61affe; color: white; }
+        .PATCH { background: #fca130; color: white; }
+        .endpoint-body {
+            padding: 20px;
+            background: #fafafa;
+            display: none;
+        }
+        .endpoint-body.active {
+            display: block;
+        }
+        .try-section {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        textarea {
+            min-height: 150px;
+            font-size: 13px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .response {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .auth-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Ad Posting Microservices API</h1>
+        <p style="color: #666; margin-bottom: 20px;">Interactive API Testing Dashboard</p>
+
+        <div class="status">
+            <strong>Services:</strong>
+            <span class="status-item">✅ MongoDB</span>
+            <span class="status-item">✅ RabbitMQ</span>
+            <span class="status-item">✅ Redis</span>
+            <span class="status-item">✅ Auth Service</span>
+        </div>
+
+        <div class="auth-section">
+            <strong>🔑 Authentication Token:</strong>
+            <input type="text" id="authToken" placeholder="Paste your JWT token here after logging in..." />
+            <small>After logging in, copy the token from the response and paste it here to test protected endpoints</small>
+        </div>
+
+        <!-- Auth Endpoints -->
+        <h2 style="margin-top: 30px; color: #333;">Authentication & User Management</h2>
+
+        <div class="endpoint">
+            <div class="endpoint-header" onclick="toggleEndpoint('register-user')">
+                <span class="method POST">POST</span>
+                <strong>/auth/register/user</strong>
+                <span style="color: #666; font-size: 14px;">Register a new user</span>
+            </div>
+            <div class="endpoint-body" id="register-user">
+                <div class="try-section">
+                    <strong>Request Body:</strong>
+                    <textarea id="register-user-body">{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123"
+}</textarea>
+                    <button onclick="makeRequest('POST', '/auth/register/user', 'register-user-body', 'register-user-response', false)">🚀 Try it out</button>
+                    <div id="register-user-response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-header" onclick="toggleEndpoint('login-user')">
+                <span class="method POST">POST</span>
+                <strong>/auth/login/user</strong>
+                <span style="color: #666; font-size: 14px;">User login</span>
+            </div>
+            <div class="endpoint-body" id="login-user">
+                <div class="try-section">
+                    <strong>Request Body:</strong>
+                    <textarea id="login-user-body">{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123"
+}</textarea>
+                    <button onclick="makeRequest('POST', '/auth/login/user', 'login-user-body', 'login-user-response', false)">🚀 Try it out</button>
+                    <div id="login-user-response"></div>
+                    <small style="color: #666;">💡 Copy the token from the response and paste it in the Authentication Token field above</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-header" onclick="toggleEndpoint('register-company')">
+                <span class="method POST">POST</span>
+                <strong>/auth/register/company</strong>
+                <span style="color: #666; font-size: 14px;">Register a new company</span>
+            </div>
+            <div class="endpoint-body" id="register-company">
+                <div class="try-section">
+                    <strong>Request Body:</strong>
+                    <textarea id="register-company-body">{
+  "name": "Tech Company Inc",
+  "email": "company@example.com",
+  "password": "SecurePassword123",
+  "description": "A leading tech company"
+}</textarea>
+                    <button onclick="makeRequest('POST', '/auth/register/company', 'register-company-body', 'register-company-response', false)">🚀 Try it out</button>
+                    <div id="register-company-response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-header" onclick="toggleEndpoint('login-company')">
+                <span class="method POST">POST</span>
+                <strong>/auth/login/company</strong>
+                <span style="color: #666; font-size: 14px;">Company login</span>
+            </div>
+            <div class="endpoint-body" id="login-company">
+                <div class="try-section">
+                    <strong>Request Body:</strong>
+                    <textarea id="login-company-body">{
+  "email": "company@example.com",
+  "password": "SecurePassword123"
+}</textarea>
+                    <button onclick="makeRequest('POST', '/auth/login/company', 'login-company-body', 'login-company-response', false)">🚀 Try it out</button>
+                    <div id="login-company-response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-header" onclick="toggleEndpoint('me')">
+                <span class="method GET">GET</span>
+                <strong>/auth/me</strong>
+                <span style="color: #666; font-size: 14px;">Get current user/company info 🔒</span>
+            </div>
+            <div class="endpoint-body" id="me">
+                <div class="try-section">
+                    <strong>Requires Authentication</strong>
+                    <p style="color: #666; font-size: 14px;">Make sure you've added your token in the Authentication Token field above</p>
+                    <button onclick="makeRequest('GET', '/auth/me', null, 'me-response', true)">🚀 Try it out</button>
+                    <div id="me-response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f0f0f0; border-radius: 5px;">
+            <h3>📚 Additional Resources</h3>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>API JSON Spec: <a href="http://localhost:8080/api-json" target="_blank">http://localhost:8080/api-json</a></li>
+                <li>Full Documentation: <code>API_DOCUMENTATION.md</code></li>
+                <li>Base URL: <code>http://localhost:8080</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080';
+
+        function toggleEndpoint(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('active');
+        }
+
+        async function makeRequest(method, endpoint, bodyElementId, responseElementId, requiresAuth) {
+            const responseDiv = document.getElementById(responseElementId);
+            responseDiv.innerHTML = '<div class="response">⏳ Loading...</div>';
+
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                if (requiresAuth) {
+                    const token = document.getElementById('authToken').value.trim();
+                    if (!token) {
+                        responseDiv.innerHTML = '<div class="response" style="background: #d32f2f;">❌ Error: Please add your authentication token above</div>';
+                        return;
+                    }
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const options = {
+                    method: method,
+                    headers: headers
+                };
+
+                if (bodyElementId && method !== 'GET') {
+                    const bodyText = document.getElementById(bodyElementId).value;
+                    options.body = bodyText;
+                }
+
+                const response = await fetch(BASE_URL + endpoint, options);
+                const data = await response.json();
+
+                const statusColor = response.ok ? '#4caf50' : '#d32f2f';
+                responseDiv.innerHTML = `
+                    <div class="response">
+                        <div style="color: ${statusColor}; margin-bottom: 10px;">
+                            ${response.ok ? '✅' : '❌'} Status: ${response.status} ${response.statusText}
+                        </div>
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+
+                // Auto-fill token if it's in the response
+                if (data.data && data.data.token) {
+                    document.getElementById('authToken').value = data.data.token;
+                    alert('✅ Token automatically saved! You can now test protected endpoints.');
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `<div class="response" style="background: #d32f2f;">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

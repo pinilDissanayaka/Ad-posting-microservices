@@ -28,7 +28,7 @@ export class JobsController {
     @Token() token: string,
   ) {
     const jobPost = await this.jobsService.create(createJobDto, company, token)
-    return { success: true, message: 'Job posted successfully.', data: { job: jobPost } }
+    return { success: true, message: 'Job posted successfully..', data: { job: jobPost } }
   }
 
   @Get()

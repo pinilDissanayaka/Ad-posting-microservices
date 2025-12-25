@@ -9,11 +9,11 @@ export abstract class AbstractRepository<T extends Document, S extends Record<st
   }
 
   async find(query: FilterQuery<T>, projection?: ProjectionType<T>, populate?: PopulateOptions): Promise<T[]> {
-    return await this.AbstractModel.find(query, projection, { lean: true, populate })
+    return await this.AbstractModel.find(query, projection, { lean: true, populate }) as T[]
   }
 
   async findOne(query: FilterQuery<T>, projection?: ProjectionType<T>): Promise<T> {
-    return this.AbstractModel.findOne(query, projection, { lean: true })
+    return this.AbstractModel.findOne(query, projection, { lean: true }) as T
   }
 
   async findById(id: string | Types.ObjectId, projection?: ProjectionType<T>, populate?: PopulateOptions) {
